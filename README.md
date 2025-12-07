@@ -53,10 +53,10 @@ def process_item(item):
 
 items = [1, 2, 3, 4, 5]
 results = run_in_parallel(
-    func=process_item,
-    tasks=items,
+    tasks=process_item,
+    args_=[(item,) for item in items],
     n_jobs=4,
-    backend="threading"  # or "multiprocessing", "asyncio"
+    thread=True  # or process=True, or omit for asyncio
 )
 print(results)  # [2, 4, 6, 8, 10]
 ```
@@ -91,7 +91,7 @@ class Answer(BaseModel):
 structured_results = client.chat_completion_parse(
     messages=messages,
     model="gpt-4",
-    response_model=Answer,
+    response_format=Answer,
     n_jobs=4
 )
 ```
@@ -113,8 +113,10 @@ loaded_data = json.read("config.json")
 # JSON Lines operations
 records = [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]
 jsonl.write("data.jsonl", records)
+# jsonl.read() returns a generator
 for record in jsonl.read("data.jsonl"):
     print(record)
+# Or convert to list: records = list(jsonl.read("data.jsonl"))
 ```
 
 ### Statistical Analysis
@@ -133,7 +135,7 @@ t_stat, p_value, significant = t_test(
     alpha=0.05,
     show_plot=True,
     save_path="./t_test_plot.png",
-    test_type="welch"  # or "student"
+    equal_var=False  # False for Welch's t-test, True for Student's t-test
 )
 
 print(f"t-statistic: {t_stat}")
@@ -144,23 +146,27 @@ print(f"Significant: {significant}")
 ## Modules
 
 ### 🚀 Parallel Processing (`scikufu.parallel`)
+
 - **Core Functions**: `run_in_parallel()`, `run_async_in_parallel()`
 - **Backends**: Threading, Multiprocessing, AsyncIO
 - **Features**: Disk-based caching, retry mechanisms, progress tracking
 - **Use Case**: CPU-bound tasks, I/O operations, concurrent API calls
 
 ### 🤖 OpenAI Integration (`scikufu.parallel.openai`)
+
 - **Client Class**: Wrapper for OpenAI async API
 - **Features**: Batch processing, structured output parsing, caching
 - **Use Case**: Large-scale language model inference, data processing
 
 ### 📁 File I/O (`scikufu.file`)
+
 - **Text Operations**: `text.read()`, `text.write()`, `text.append()`
 - **JSON Operations**: `json.read()`, `json.write()`, `json.append()`
 - **JSONL Operations**: `jsonl.read()`, `jsonl.write()`, `jsonl.append()`
 - **Features**: Unicode support, automatic directory creation, memory efficiency
 
 ### 📊 Statistical Analysis (`scikufu.stats`)
+
 - **T-Test**: Comprehensive statistical testing with visualization
 - **Features**: Normality checks, effect size calculation, PP/QQ plots
 - **Input Formats**: Tuples, pandas DataFrames, numpy arrays

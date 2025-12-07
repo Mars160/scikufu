@@ -6,7 +6,7 @@ SciKuFu 是一个将我个人科研过程中常用功能进行封装的 Python �
 
 ## 主要功能
 
-- **并行处理**：高性能并行计算，支持线程、进程和异步IO后端
+- **并行处理**：高性能并行计算，支持线程、进程和异步 IO 后端
 - **OpenAI 集成**：批量处理 OpenAI API 调用，支持缓存和结构化输出解析
 - **文件 I/O 操作**：统一的文本、JSON 和 JSON Lines 文件操作，支持编码
 - **统计分析**：全面的统计方法，包括带正态性检验和可视化的 t 检验
@@ -53,10 +53,10 @@ def process_item(item):
 
 items = [1, 2, 3, 4, 5]
 results = run_in_parallel(
-    func=process_item,
-    tasks=items,
+    tasks=process_item,
+    args_=[(item,) for item in items],
     n_jobs=4,
-    backend="threading"  # 或 "multiprocessing", "asyncio"
+    thread=True  # 或 process=True，或不填使用 asyncio
 )
 print(results)  # [2, 4, 6, 8, 10]
 ```
@@ -91,7 +91,7 @@ class Answer(BaseModel):
 structured_results = client.chat_completion_parse(
     messages=messages,
     model="gpt-4",
-    response_model=Answer,
+    response_format=Answer,
     n_jobs=4
 )
 ```
@@ -113,8 +113,10 @@ loaded_data = json.read("config.json")
 # JSON Lines 操作
 records = [{"id": 1, "name": "张三"}, {"id": 2, "name": "李四"}]
 jsonl.write("data.jsonl", records)
+# jsonl.read() 返回生成器
 for record in jsonl.read("data.jsonl"):
     print(record)
+# 或转换为列表：records = list(jsonl.read("data.jsonl"))
 ```
 
 ### 统计分析
@@ -133,7 +135,7 @@ t_stat, p_value, significant = t_test(
     alpha=0.05,
     show_plot=True,
     save_path="./t_test_plot.png",
-    test_type="welch"  # 或 "student"
+    equal_var=False  # False 为 Welch t-test，True 为 Student t-test
 )
 
 print(f"t统计量: {t_stat}")
@@ -144,26 +146,30 @@ print(f"显著性: {significant}")
 ## 模块介绍
 
 ### 🚀 并行处理 (`scikufu.parallel`)
+
 - **核心函数**：`run_in_parallel()`, `run_async_in_parallel()`
-- **后端支持**：线程、进程、异步IO
+- **后端支持**：线程、进程、异步 IO
 - **特色功能**：磁盘缓存、重试机制、进度跟踪
-- **使用场景**：CPU密集型任务、I/O操作、并发API调用
+- **使用场景**：CPU 密集型任务、I/O 操作、并发 API 调用
 
 ### 🤖 OpenAI 集成 (`scikufu.parallel.openai`)
-- **客户端类**：OpenAI 异步API封装
+
+- **客户端类**：OpenAI 异步 API 封装
 - **特色功能**：批量处理、结构化输出解析、缓存
 - **使用场景**：大规模语言模型推理、数据处理
 
 ### 📁 文件 I/O (`scikufu.file`)
+
 - **文本操作**：`text.read()`, `text.write()`, `text.append()`
-- **JSON操作**：`json.read()`, `json.write()`, `json.append()`
-- **JSONL操作**：`jsonl.read()`, `jsonl.write()`, `jsonl.append()`
-- **特色功能**：Unicode支持、自动目录创建、内存高效
+- **JSON 操作**：`json.read()`, `json.write()`, `json.append()`
+- **JSONL 操作**：`jsonl.read()`, `jsonl.write()`, `jsonl.append()`
+- **特色功能**：Unicode 支持、自动目录创建、内存高效
 
 ### 📊 统计分析 (`scikufu.stats`)
-- **T检验**：带可视化的全面统计检验
-- **特色功能**：正态性检验、效应量计算、PP/QQ图
-- **输入格式**：元组、pandas DataFrame、numpy数组
+
+- **T 检验**：带可视化的全面统计检验
+- **特色功能**：正态性检验、效应量计算、PP/QQ 图
+- **输入格式**：元组、pandas DataFrame、numpy 数组
 - **导出功能**：多种图表格式、详细统计报告
 
 ## 可选依赖
