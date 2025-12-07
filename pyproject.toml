@@ -1,0 +1,41 @@
+[project]
+name = "scikufu"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.optional-dependencies]
+parallel = [
+    "diskcache>=5.6.3",
+    "tqdm>=4.67.1",
+]
+parallel-openai = ["openai>=2.9.0"]
+stats = [
+    "matplotlib>=3.10.7",
+    "numpy>=2.3.5",
+    "pandas>=2.3.3",
+    "scipy>=1.16.3",
+]
+
+
+[build-system]
+requires = ["uv_build>=0.9.15,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "-v",
+    "--strict-markers",
+    "--cov=scikufu",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+]
+
+[dependency-groups]
+dev = ["pytest>=9.0.2", "pytest-cov>=7.0.0"]
