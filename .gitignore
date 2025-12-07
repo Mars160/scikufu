@@ -1,0 +1,21 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+.coverage
+htmlcov/
+.pytest_cache/
+
+.vscode/
+
+# AI model files
+.claude
+CLAUDE.md
+GEMINI.md
